@@ -27,7 +27,17 @@
 
     input.oninput = function() {
         if (input.value) {
-            result.innerHTML = decodeHebUri(input.value);
+            try {
+                // var no25 = input.value.replace("%25", "%")
+                var no25 = input.value.replace(/%25/g, "%")
+                var res = decodeHebUri(no25);
+                result.innerHTML = res
+            }
+            catch {
+                result.innerHTML = "< error >"
+            }
+            
+            
         }
         else {
             result.innerHTML = "Results";
