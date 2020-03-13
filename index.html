@@ -7,8 +7,8 @@
 
     <h1>Enter url:</h1>
     <div style="margin: 30px; width: 80%;">
-        <input style="border: 2px solid #ccc!important; padding: 10px; padding-right: 0px; width: -webkit-fill-available; font-family: monospace;" type="text" id="input" 
-        placeholder="Enter your url">
+        <input style="border: 2px solid #ccc!important; padding: 10px; padding-right: 0px; width: -webkit-fill-available; font-family: monospace;" 
+        type="text" id="input" placeholder="Enter your url">
     </div>
 
     <h1>Hebrew output:</h1>
@@ -19,9 +19,14 @@
 
     <h1>Remove safepage:</h1>
 
-    <div style="border: 2px solid #ccc!important; margin: 30px; width:80%;">
-        <p id="safepageRemoved" style="margin: 10px; font-family: monospace;">Results</p>
+    <div style="display: flex;">
+        <div style="border: 2px solid #ccc!important; margin: 30px; width:80%; float: left;">
+            <p id="safepageRemoved" style="margin: 10px; font-family: monospace;">Results</p>
+        </div>
+        <a id="noSafepageButton" href="" class="btn btn-green" itemprop="url" 
+        style="margin: 2px; margin-top: 30px; margin-bottom: 30px;">GO »</a>
     </div>
+
 
     </body>
 </html>
@@ -30,6 +35,43 @@
     h1 {
         /* font-family: cursive; */
         font-family: monospace;
+    }
+    .btn.btn-green:hover {
+        background-color: #008329;
+    }
+    .btn.btn-green {
+        -webkit-box-shadow: 0 1px 6px rgba(57,73,76,.25);
+        box-shadow: 0 1px 6px rgba(57,73,76,.25);
+        color: #fff;
+        background-color: #359900;
+    }
+
+    .btn.btn-red {
+        -webkit-box-shadow: 0 1px 6px rgba(57,73,76,.25);
+        box-shadow: 0 1px 6px rgba(57,73,76,.25);
+        color: #fff;
+        background-color: red;
+    }
+
+    .btn {
+        font-family: Roboto,sans-serif;
+        border-radius: 4px;
+        font-size: 16px;
+        padding: 10px 25px;
+        cursor: pointer;
+        border: 1px solid transparent;
+        text-align: center;
+        margin-bottom: 0;
+        text-decoration: none;
+        /* font-weight: 500; */
+        /* font-style: normal; */
+        /* -ms-touch-action: manipulation; */
+        /* line-height: 1.42857; */
+        /* display: inline-block; */
+        /* vertical-align: middle; */
+        /* white-space: nowrap; */
+        /* outline: none; */
+        /* touch-action: manipulation; */
     }
 </style>
 
@@ -42,27 +84,47 @@
         return str.match("&url=(.*)&cause=")[1];
     }
 
+    function setSafepageAsError() {
+        safepageRemoved.innerHTML = "< error >"
+        noSafepageButton.className = "btn btn-red";
+    }
+
+    noSafepageButton.style.display = "none";
+
     input.oninput = function() {
         if (input.value) {
+            var canDecode = false;
+            var res = "";
+
             try {
                 // var no25 = input.value.replace("%25", "%")
                 var no25 = input.value.replace(/%25/g, "%")
-                var res = decodeHebUri(no25);
+                res = decodeHebUri(no25);
                 result.innerHTML = res
-
-                var withoutsafepage = removeSafepage(res)
-                safepageRemoved.innerHTML = withoutsafepage
+                canDecode = true;
             }
             catch {
-                result.innerHTML = "< error >"
-                safepageRemoved.innerHTML = "< error >"
+                result.innerHTML = "< error >";
+                setSafepageAsError();
             }
-            
-            
+
+            try {
+                if (canDecode) {
+                    var withoutsafepage = removeSafepage(res);
+                    safepageRemoved.innerHTML = withoutsafepage;
+                    noSafepageButton.style.display = "block";
+                    noSafepageButton.setAttribute('href', withoutsafepage);
+                    noSafepageButton.className = "btn btn-green";
+                }
+            }
+            catch {
+                setSafepageAsError();
+            }
         }
         else {
             result.innerHTML = "Results";
             safepageRemoved.innerHTML = "Results";
+            noSafepageButton.style.display = "none";
         }
       
     };
