@@ -17,12 +17,29 @@
         <p id="result" style="margin: 10px; font-family: monospace;">Results</p>
     </div>
 
+    <h1>Remove safepage:</h1>
+
+    <div style="border: 2px solid #ccc!important; margin: 30px; width:80%;">
+        <p id="safepageRemoved" style="margin: 10px; font-family: monospace;">Results</p>
+    </div>
+
     </body>
 </html>
+
+<style>
+    h1 {
+        /* font-family: cursive; */
+        font-family: monospace;
+    }
+</style>
 
 <script>
     function decodeHebUri(str) {
         return decodeURIComponent(str.replace(/\+/g,  " "));
+    }
+
+    function removeSafepage(str) {
+        return str.match("&url=(.*)&cause=")[1];
     }
 
     input.oninput = function() {
@@ -32,15 +49,20 @@
                 var no25 = input.value.replace(/%25/g, "%")
                 var res = decodeHebUri(no25);
                 result.innerHTML = res
+
+                var withoutsafepage = removeSafepage(res)
+                safepageRemoved.innerHTML = withoutsafepage
             }
             catch {
                 result.innerHTML = "< error >"
+                safepageRemoved.innerHTML = "< error >"
             }
             
             
         }
         else {
             result.innerHTML = "Results";
+            safepageRemoved.innerHTML = "Results";
         }
       
     };
